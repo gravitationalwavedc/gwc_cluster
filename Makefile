@@ -4,6 +4,10 @@
 build: update
 	cd roles/kubespray && vagrant up
 
+provision:
+	# Re Execute nominated vagrant provisioner (ansible)
+	cd roles/kubespray && vagrant provision
+
 update:
 	# Update submodule
 
