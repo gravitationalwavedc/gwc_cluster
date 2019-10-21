@@ -6,3 +6,5 @@
 * Kubernetes Version 1.16
 * Python3 3.7.14
 * Initial Cluster configuration
+* Vagrant 2.2.5
+* Virtualbox 6.0
