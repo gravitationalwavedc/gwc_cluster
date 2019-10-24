@@ -16,6 +16,10 @@ Dependencies
 ------------
 * [Kubespray](https://github.com/kubernetes-sigs/kubespray)
 
+Usage
+----------------
+* [VAGRANT_DEPLOYMENT](./docs/VAGRANT_DEPLOYMENT.md)
+
 Reference
 ----------------
 * [Ansible/User Guide](https://docs.ansible.com/ansible/latest/user_guide/index.html)
