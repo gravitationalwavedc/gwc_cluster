@@ -14,7 +14,7 @@ Deployment
 * Local Orchestration is handled by the [Makefile](./Makefile)
 * Deployment is intended to emulate the infrastructure of the production cluster albeit with limited resources.
 
-Makefile Commands make $COMMAND
+Makefile Commands
 --------------
 * build - Initialises kubespray submodule, creates VM, executes Ansible
 * login_$(NODE_NUM) - SSH into specified node
