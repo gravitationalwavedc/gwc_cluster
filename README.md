@@ -9,8 +9,8 @@ Requirements
 
 Directories
 --------------
-* inventory - Ansible inventory containing dynamic variables consumed by playbooks
-* docs - Documentation
+* [inventory](./inventory) - Ansible inventory containing dynamic variables consumed by playbooks
+* [docs](./docs) - Documentation
 
 Dependencies
 ------------
