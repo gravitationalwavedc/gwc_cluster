@@ -101,8 +101,21 @@ items:
         storage: 1Gi
   status: {}
 
+# mysql service
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: gwcloud-db
+  spec:
+    ports:
+    - name: gwcloud-db
+      port: 3306
+      targetPort: 3306
+    selector:
+      app: gwcloud
+      role: database
 
-# webapp
+# webapp deployment
 - apiVersion: extensions/v1beta1
   kind: Deployment
   metadata:
@@ -143,5 +156,20 @@ items:
           - name: SITE_URL
             value: "<enter the site url>"
         restartPolicy: Always
+
+# webapp service
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: gwcloud-web
+  spec:
+    ports:
+    - name: webui
+      port: 8000
+      targetPort: 8001
+    selector:
+      app: gwcloud
+      role: web
+
 kind: List
 metadata: {}
