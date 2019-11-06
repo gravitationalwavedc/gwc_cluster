@@ -4,13 +4,14 @@ items:
 - apiVersion: v1
   kind: Namespace
   metadata:
-    name: gwcloud
+    name: webapp
 
 # Ingress
 - apiVersion: extensions/v1beta1
   kind: Ingress
   metadata:
     name: gwc-ing
+    namespace: webapp
     annotations:
       kubernetes.io/ingress.class: "nginx"
   spec:
@@ -36,6 +37,7 @@ items:
   kind: PersistentVolume
   metadata:
     name: pv-gwcloud
+    namespace: webapp
     labels:
       type: local
   spec:
@@ -53,6 +55,7 @@ items:
   kind: Deployment
   metadata:
     name: gwcloud-db
+    namespace: webapp
     labels:
       app: gwcloud
       role: database
@@ -85,6 +88,7 @@ items:
   kind: PersistentVolumeClaim
   metadata:
     name: gwcloud-db
+    namespace: webapp
     labels:
       app: gwcloud
       role: db-pvc
@@ -97,6 +101,47 @@ items:
         storage: 1Gi
   status: {}
 
-# webapp 
+
+# webapp
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    name: gwcloud-web
+    namespace: webapp
+    labels:
+      app: gwcloud
+      role: web
+  spec:
+    replicas: 1
+    template:
+      metadata:
+        labels:
+          app: gwcloud
+          role: web
+      spec:
+        containers:
+        - name: gwcloud-web
+          image: dg_webapp:latest
+          ports:
+          - name: webui
+            containerPort: 8000
+          - name: jobcontroller
+            containerPort: 8001
+          resources: {}
+          tty: true
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: 76vcqmGKP19Z1AEx
+          - name: MYSQL_DATABASE
+            value: bilby
+          - name: MYSQL_USER
+            value: awxpass
+          - name: MYSQL_PASSWORD
+            value: "5432"
+          - name: MYSQL_HOST
+            value: awx
+          - name: SITE_URL
+            value: awx-cache
+        restartPolicy: Always
 kind: List
 metadata: {}
