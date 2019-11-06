@@ -131,15 +131,15 @@ items:
           tty: true
           env:
           - name: MYSQL_ROOT_PASSWORD
-            value: 76vcqmGKP19Z1AEx
+            value: "<enter mysql root pass here>"
           - name: MYSQL_DATABASE
-            value: bilby
+            value: "<enter mysql db name here>"
           - name: MYSQL_USER
-            value: awxpass
+            value: "<enter mysql user here>"
           - name: MYSQL_PASSWORD
-            value: "5432"
+            value: "<enter mysql pass here>"
           - name: MYSQL_HOST
-            value: awx
+            value: 
           - name: SITE_URL
             value: awx-cache
         restartPolicy: Always
