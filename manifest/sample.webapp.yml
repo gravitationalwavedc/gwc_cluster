@@ -139,9 +139,9 @@ items:
           - name: MYSQL_PASSWORD
             value: "<enter mysql pass here>"
           - name: MYSQL_HOST
-            value: 
+            value: "<enter mysql host here>"
           - name: SITE_URL
-            value: awx-cache
+            value: "<enter the site url>"
         restartPolicy: Always
 kind: List
 metadata: {}
