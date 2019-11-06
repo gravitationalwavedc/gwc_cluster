@@ -1,10 +1,10 @@
 .PHONEY: build test deploy down clean \
-	kubespray _ks_init _ks_update
+	kubespray _ks_init _ks_status _ks_update_vagrantfile
 
 _DIR_KUBESPRAY=./roles/kubespray
 _KUBESPRAY_RELEASE=release-2.11
 
-# LOCAL TESTING
+# LOCAL DEPLOYMENT
 build: kubespray
 	@cd $(_DIR_KUBESPRAY) && vagrant up
 
@@ -12,15 +12,23 @@ provision:
 	# Re Execute nominated vagrant provisioner (ansible)
 	@cd $(_DIR_KUBESPRAY) && vagrant provision
 
-kubespray: _ks_init _ks_update
+kubespray: _ks_init _ks_status _ks_update_vagrantfile
 
 _ks_init:
 	# Initialise submodule submodule
-	@cd $(_DIR_KUBESPRAY) && git submodule update --init --recursive
+	@git submodule update --init --recursive
 
-_ks_update:
-	# Update kubespray repo to selected release
-	@cd $(_DIR_KUBESPRAY) && git checkout $(_KUBESPRAY_RELEASE)
+_ks_status:
+	# Confirm Kubespray Release 2.11 commit 86cc703c
+	@cd $(_DIR_KUBESPRAY) && git branch
+
+_ks_update_vagrantfile:
+	# Update OS image
+	@cat  $(_DIR_KUBESPRAY)/Vagrantfile | sed 's/generic\/ubuntu1804/ubuntu\/bionic64/g' > tmp
+
+	# Update Container Network Interface
+	@cat tmp | sed 's/flannel/calico/g' >  $(_DIR_KUBESPRAY)/Vagrantfile
+	@rm tmp
 
 test:
 	# Perform api call to Kubernetes master
