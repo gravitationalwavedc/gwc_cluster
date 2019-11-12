@@ -114,6 +114,35 @@ spec:
     app: gwcloud
     role: database
 ---
+# webapp pv
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs
+  namespace: webapp
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 172.8.17.104
+    path: "/mnt/sharedfolder/static"
+---
+# webapp pvc
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs
+  namespace: webapp
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 25Mi
+---
 # webapp deployment
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -158,6 +187,14 @@ spec:
         args:
         - -c
         - "pip install gunicorn && python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn bilbyui.wsgi -b 0.0.0.0:8000"
+        volumeMounts:
+        # name must match the volume name below
+        - name: nfs
+          mountPath: "/usr/share/nginx/html"
+      volumes:
+      - name: nfs
+        persistentVolumeClaim:
+          claimName: nfs
       restartPolicy: Always
 ---
 # webapp service
