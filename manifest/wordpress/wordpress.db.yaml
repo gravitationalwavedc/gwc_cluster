@@ -1,0 +1,49 @@
+---
+# db
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gwdc-db
+  namespace: gwdc
+  labels:
+    app: gwdc
+    role: database
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gwdc
+        role: database
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        ports:
+        - name: port-mysql
+          containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: somewordpress
+        - name: MYSQL_DATABASE
+          value: wordpress
+        - name: MYSQL_USER
+          value: wordpress
+        - name: MYSQL_PASSWORD
+          value: wordpress
+---
+# mysql service
+apiVersion: v1
+kind: Service
+metadata:
+  name: gwdc-db
+  namespace: gwdc
+spec:
+  ports:
+  - name: gwdc-db
+    port: 3306
+    targetPort: 3306
+  selector:
+    app: gwdc
+    role: database
+...

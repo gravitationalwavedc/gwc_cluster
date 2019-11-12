@@ -1,0 +1,52 @@
+---
+# webapp deployment
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gwdc-web
+  namespace: gwdc
+  labels:
+    app: gwdc
+    role: web
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gwdc
+        role: web
+    spec:
+      containers:
+      - name: gwdc-web
+        image: wordpress:latest
+        ports:
+        - name: webui
+          containerPort: 80
+        resources: {}
+        tty: true
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: gwdc-db
+        - name: WORDPRESS_DB_USER
+          value: wordpress
+        - name: WORDPRESS_DB_PASSWORD
+          value: wordpress
+        - name: WORDPRESS_DB_NAME
+          value: wordpress
+      restartPolicy: Always
+---
+# wordpress
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: gwdc
+  name: gwdc-web
+spec:
+  ports:
+  - name: webui
+    port: 80
+    targetPort: 80
+  selector:
+    app: gwcloud
+    role: web
+...
