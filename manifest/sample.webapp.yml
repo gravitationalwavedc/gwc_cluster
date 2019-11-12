@@ -125,6 +125,9 @@ spec:
     storage: 100Mi
   accessModes:
     - ReadWriteMany
+  mountOptions:
+    - hard
+    - nfsvers=4.1
   nfs:
     server: 172.8.17.104
     path: "/mnt/sharedfolder/static"
