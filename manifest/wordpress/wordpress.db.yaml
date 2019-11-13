@@ -1,4 +1,36 @@
 ---
+# PersistentVolume - NFS
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gwdc-nfs-pv
+  labels:
+    volume: gwdc-nfs-volume
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  nfs:
+    server: 172.17.8.104
+    path: "/mnt/sharedfolder/gwdc/db_data"
+---
+# PersistentVolumeClaim - NFS
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: nfs-pvc
+  namespace: gwdc
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  selector:
+    matchLabels:
+      volume: gwdc-nfs-volume
+---
 # db
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -31,6 +63,13 @@ spec:
           value: wordpress
         - name: MYSQL_PASSWORD
           value: wordpress
+        volumeMounts:
+          - name: nfs-test
+            mountPath: "/var/lib/mysql"
+      volumes:
+      - name: nfs-test
+        persistentVolumeClaim:
+          claimName: nfs-pvc
 ---
 # mysql service
 apiVersion: v1

@@ -42,11 +42,12 @@ metadata:
   namespace: gwdc
   name: gwdc-web
 spec:
+  type: NodePort
   ports:
   - name: webui
     port: 80
     targetPort: 80
   selector:
-    app: gwcloud
+    app: gwdc
     role: web
 ...
