@@ -64,10 +64,10 @@ spec:
         - name: MYSQL_PASSWORD
           value: wordpress
         volumeMounts:
-          - name: nfs-mysql_data
+          - name: nfs-mysql-data
             mountPath: "/var/lib/mysql"
       volumes:
-      - name: nfs-mysql_data
+      - name: nfs-mysql-data
         persistentVolumeClaim:
           claimName: nfs-pvc-db
 ---

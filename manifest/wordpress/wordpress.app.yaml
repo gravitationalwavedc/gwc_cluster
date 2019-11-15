@@ -67,10 +67,10 @@ spec:
           value: wordpress
       restartPolicy: Always
         volumeMounts:
-          - name: nfs-wordpress_html
+          - name: nfs-wordpress-html
             mountPath: "/var/www/html"
       volumes:
-      - name: nfs-wordpress_html
+      - name: nfs-wordpress-html
         persistentVolumeClaim:
           claimName: nfs-pvc-app
 ---
