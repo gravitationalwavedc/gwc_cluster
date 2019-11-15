@@ -3,9 +3,9 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: gwdc-nfs-pv
+  name: gwdc-nfs-pv-db
   labels:
-    volume: gwdc-nfs-volume
+    volume: gwdc-nfs-volume-db
 spec:
   accessModes:
   - ReadWriteMany
@@ -19,7 +19,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: nfs-pvc
+  name: nfs-pvc-db
   namespace: gwdc
 spec:
   accessModes:
@@ -29,7 +29,7 @@ spec:
       storage: 1Gi
   selector:
     matchLabels:
-      volume: gwdc-nfs-volume
+      volume: gwdc-nfs-volume-db
 ---
 # db
 apiVersion: extensions/v1beta1
@@ -64,12 +64,12 @@ spec:
         - name: MYSQL_PASSWORD
           value: wordpress
         volumeMounts:
-          - name: nfs-test
+          - name: nfs-mysql_data
             mountPath: "/var/lib/mysql"
       volumes:
-      - name: nfs-test
+      - name: nfs-mysql_data
         persistentVolumeClaim:
-          claimName: nfs-pvc
+          claimName: nfs-pvc-db
 ---
 # mysql service
 apiVersion: v1
