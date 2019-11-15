@@ -65,7 +65,6 @@ spec:
           value: wordpress
         - name: WORDPRESS_DB_NAME
           value: wordpress
-      restartPolicy: Always
         volumeMounts:
           - name: nfs-wordpress-html
             mountPath: "/var/www/html"
@@ -73,6 +72,7 @@ spec:
       - name: nfs-wordpress-html
         persistentVolumeClaim:
           claimName: nfs-pvc-app
+      restartPolicy: Always
 ---
 # wordpress
 apiVersion: v1
