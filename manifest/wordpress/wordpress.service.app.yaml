@@ -11,6 +11,7 @@ spec:
   - name: webui
     port: 80
     targetPort: 80
+    nodePort: 30662
   selector:
     app: gwdc
     role: web
