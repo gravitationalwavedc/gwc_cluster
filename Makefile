@@ -8,9 +8,14 @@ _KUBESPRAY_RELEASE=release-2.11
 build: kubespray
 	@cd $(_DIR_KUBESPRAY) && vagrant up
 
+build: kubespray up
+
 provision:
 	# Re Execute nominated vagrant provisioner (ansible)
 	@cd $(_DIR_KUBESPRAY) && vagrant provision
+
+up:
+	@cd $(_DIR_KUBESPRAY) && vagrant up
 
 kubespray: _ks_init _ks_status _ks_update_vagrantfile
 
