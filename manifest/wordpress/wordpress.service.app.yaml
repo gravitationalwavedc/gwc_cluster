@@ -12,6 +12,11 @@ spec:
     port: 80
     targetPort: 80
     nodePort: 30662
+  - name: https
+    port: 443
+    targetPort: 443
+    protocol: TCP
+    nodePort: 32433
   selector:
     app: gwdc
     role: web

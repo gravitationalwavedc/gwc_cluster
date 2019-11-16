@@ -5,12 +5,15 @@ _DIR_KUBESPRAY=./roles/kubespray
 _KUBESPRAY_RELEASE=release-2.11
 
 # LOCAL TESTING
-build: kubespray
-	@cd $(_DIR_KUBESPRAY) && vagrant up
 
-provision:
+build: kubespray up
+
+aprovision:
 	# Re Execute nominated vagrant provisioner (ansible)
 	@cd $(_DIR_KUBESPRAY) && vagrant provision
+
+up:
+	@cd $(_DIR_KUBESPRAY) && vagrant up
 
 kubespray: _ks_init _ks_update
 
