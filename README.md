@@ -9,12 +9,16 @@ Requirements
 
 Directories
 --------------
-* inventory - Ansible inventory containing dynamic variables consumed by playbooks
-* docs - Documentation
+* [inventory](./inventory) - Ansible inventory containing dynamic variables consumed by playbooks
+* [docs](./docs) - Documentation
 
 Dependencies
 ------------
 * [Kubespray](https://github.com/kubernetes-sigs/kubespray)
+
+Usage
+----------------
+* [VAGRANT_DEPLOYMENT](./docs/VAGRANT_DEPLOYMENT.md)
 
 Reference
 ----------------
