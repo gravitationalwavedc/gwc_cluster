@@ -1,0 +1,19 @@
+---
+# Ingress
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gwc-ing
+  namespace: webapp
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: gw-cloud.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: gwc-web
+          servicePort: 8000
+...

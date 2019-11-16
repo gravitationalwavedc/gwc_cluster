@@ -1,0 +1,49 @@
+---
+# mysql deployment
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gwcloud-db
+  namespace: webapp
+  labels:
+    app: gwcloud
+    role: database
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gwcloud
+        role: database
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        ports:
+        - name: port-mysql
+          containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "<enter mysql root pass here>"
+        - name: MYSQL_DATABASE
+          value: "<enter mysql db name here>"
+        - name: MYSQL_USER
+          value: "<enter mysql user here>"
+        - name: MYSQL_PASSWORD
+          value: "<enter mysql pass here>"
+---
+# mysql service
+apiVersion: v1
+kind: Service
+metadata:
+  name: gwcloud-db
+  namespace: webapp
+spec:
+  ports:
+  - name: gwcloud-db
+    port: 3306
+    targetPort: 3306
+  selector:
+    app: gwcloud
+    role: database
+...

@@ -1,29 +1,27 @@
-apiVersion: v1
-items:
 # Namespace
-- apiVersion: v1
-  kind: Namespace
-  metadata:
-    name: webapp
-
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: webapp
+---
 # Ingress
-- apiVersion: extensions/v1beta1
-  kind: Ingress
-  metadata:
-    name: gwc-ing
-    namespace: webapp
-    annotations:
-      kubernetes.io/ingress.class: "nginx"
-  spec:
-    rules:
-    - host: gw-cloud.org
-      http:
-        paths:
-        - path: /
-          backend:
-            serviceName: gwc-web
-            servicePort: 8000
-
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gwc-ing
+  namespace: webapp
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: gw-cloud.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: gwc-web
+          servicePort: 8000
+---
 # mysql persistent volume
 #   this uses a node's FS for it be mounted to a pod
 #   it is not ideal as it makes the persistent volume
@@ -33,145 +31,187 @@ items:
 # If time permits, use a POC node and deploy cepf to it
 #  when POC node is ready for consumption refer to cepfs sample
 #   https://github.com/kubernetes/examples/tree/master/staging/volumes/nfs
-- apiVersion: v1
-  kind: PersistentVolume
-  metadata:
-    name: pv-gwcloud
-    namespace: webapp
-    labels:
-      type: local
-  spec:
-    storageClassName: manual
-    capacity:
-      storage: 1Gi
-    accessModes:
-      - ReadWriteOnce
-    persistentVolumeReclaimPolicy: Retain
-    hostPath:
-      path: "<mounted path from storage cluster>"
-
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-gwcloud
+  namespace: webapp
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "<mounted path from storage cluster>"
+---
 # mysql deployment
-- apiVersion: extensions/v1beta1
-  kind: Deployment
-  metadata:
-    name: gwcloud-db
-    namespace: webapp
-    labels:
-      app: gwcloud
-      role: database
-  spec:
-    replicas: 1
-    template:
-      metadata:
-        labels:
-          app: gwcloud
-          role: database
-      spec:
-        containers:
-        - name: mysql
-          image: mysql:5.7
-          ports:
-          - name: port-mysql
-            containerPort: 3306
-          env:
-          - name: MYSQL_ROOT_PASSWORD
-            value: "<enter mysql root pass here>"
-          - name: MYSQL_DATABASE
-            value: "<enter mysql db name here>"
-          - name: MYSQL_USER
-            value: "<enter mysql user here>"
-          - name: MYSQL_PASSWORD
-            value: "<enter mysql pass here>"
-
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gwcloud-db
+  namespace: webapp
+  labels:
+    app: gwcloud
+    role: database
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gwcloud
+        role: database
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        ports:
+        - name: port-mysql
+          containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "<enter mysql root pass here>"
+        - name: MYSQL_DATABASE
+          value: "<enter mysql db name here>"
+        - name: MYSQL_USER
+          value: "<enter mysql user here>"
+        - name: MYSQL_PASSWORD
+          value: "<enter mysql pass here>"
+---
 # mysql persistent volume claim
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    name: gwcloud-db
-    namespace: webapp
-    labels:
-      app: gwcloud
-      role: db-pvc
-  spec:
-    storageClassName: manual
-    accessModes:
-      - ReadWriteOnce
-    resources:
-      requests:
-        storage: 1Gi
-  status: {}
-
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gwcloud-db
+  namespace: webapp
+  labels:
+    app: gwcloud
+    role: db-pvc
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+status: {}
+---
 # mysql service
-- apiVersion: v1
-  kind: Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: gwcloud-db
   namespace: webapp
-  metadata:
-    name: gwcloud-db
-  spec:
-    ports:
-    - name: gwcloud-db
-      port: 3306
-      targetPort: 3306
-    selector:
-      app: gwcloud
-      role: database
-
+spec:
+  ports:
+  - name: gwcloud-db
+    port: 3306
+    targetPort: 3306
+  selector:
+    app: gwcloud
+    role: database
+---
+# webapp pv
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs
+  namespace: webapp
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteMany
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    server: 172.8.17.104
+    path: "/mnt/sharedfolder/static"
+---
+# webapp pvc
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs
+  namespace: webapp
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 25Mi
+---
 # webapp deployment
-- apiVersion: extensions/v1beta1
-  kind: Deployment
-  metadata:
-    name: gwcloud-web
-    namespace: webapp
-    labels:
-      app: gwcloud
-      role: web
-  spec:
-    replicas: 1
-    template:
-      metadata:
-        labels:
-          app: gwcloud
-          role: web
-      spec:
-        containers:
-        - name: gwcloud-web
-          image: dg_webapp:latest
-          ports:
-          - name: webui
-            containerPort: 8000
-          - name: jobcontroller
-            containerPort: 8001
-          resources: {}
-          tty: true
-          env:
-          - name: MYSQL_ROOT_PASSWORD
-            value: "<enter mysql root pass here>"
-          - name: MYSQL_DATABASE
-            value: "<enter mysql db name here>"
-          - name: MYSQL_USER
-            value: "<enter mysql user here>"
-          - name: MYSQL_PASSWORD
-            value: "<enter mysql pass here>"
-          - name: MYSQL_HOST
-            value: "<enter mysql host here>"
-          - name: SITE_URL
-            value: "<enter the site url>"
-        restartPolicy: Always
-
-# webapp service
-- apiVersion: v1
-  kind: Service
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gwcloud-web
   namespace: webapp
-  metadata:
-    name: gwcloud-web
-  spec:
-    ports:
-    - name: webui
-      port: 8000
-      targetPort: 8001
-    selector:
-      app: gwcloud
-      role: web
-
-kind: List
-metadata: {}
+  labels:
+    app: gwcloud
+    role: web
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gwcloud
+        role: web
+    spec:
+      containers:
+      - name: gwcloud-web
+        image: dg_webapp:0.1
+        ports:
+        - name: webui
+          containerPort: 8000
+        - name: jobcontroller
+          containerPort: 8001
+        resources: {}
+        tty: true
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "<enter mysql root pass here>"
+        - name: MYSQL_DATABASE
+          value: "<enter mysql db name here>"
+        - name: MYSQL_USER
+          value: "<enter mysql user here>"
+        - name: MYSQL_PASSWORD
+          value: "<enter mysql pass here>"
+        - name: MYSQL_HOST
+          value: "<enter mysql host here>"
+        - name: SITE_URL
+          value: "<enter the site url>"
+        command: ["bash"]
+        args:
+        - -c
+        - "pip install gunicorn && python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn bilbyui.wsgi -b 0.0.0.0:8000"
+        volumeMounts:
+        # name must match the volume name below
+        - name: nfs
+          mountPath: "/usr/share/nginx/html"
+      volumes:
+      - name: nfs
+        persistentVolumeClaim:
+          claimName: nfs
+      restartPolicy: Always
+---
+# webapp service
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: webapp
+  name: gwcloud-web
+spec:
+  ports:
+  - name: webui
+    port: 8000
+    targetPort: 8001
+  selector:
+    app: gwcloud
+    role: web
+---

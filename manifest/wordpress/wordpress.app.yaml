@@ -1,0 +1,76 @@
+---
+# PersistentVolume - NFS
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gwdc-nfs-pv-app
+  labels:
+    volume: gwdc-nfs-volume-app
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  nfs:
+    server: 172.17.8.104
+    path: "/mnt/sharedfolder/gwdc/wp_html"
+---
+# PersistentVolumeClaim - NFS
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: nfs-pvc-app
+  namespace: gwdc
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  selector:
+    matchLabels:
+      volume: gwdc-nfs-volume-app
+---
+# webapp deployment
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gwdc-web
+  namespace: gwdc
+  labels:
+    app: gwdc
+    role: web
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gwdc
+        role: web
+    spec:
+      containers:
+      - name: gwdc-web
+        image: wordpress:latest
+        ports:
+        - name: webui
+          containerPort: 80
+        resources: {}
+        tty: true
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: gwdc-db
+        - name: WORDPRESS_DB_USER
+          value: wordpress
+        - name: WORDPRESS_DB_PASSWORD
+          value: wordpress
+        - name: WORDPRESS_DB_NAME
+          value: wordpress
+        volumeMounts:
+          - name: nfs-wordpress-html
+            mountPath: "/var/www/html/wp-content"
+      volumes:
+      - name: nfs-wordpress-html
+        persistentVolumeClaim:
+          claimName: nfs-pvc-app
+      restartPolicy: Always
+...

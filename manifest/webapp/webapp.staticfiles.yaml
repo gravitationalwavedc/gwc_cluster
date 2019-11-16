@@ -1,0 +1,55 @@
+---
+# nginx staticfiles
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gwcloud-web
+  namespace: webapp
+  labels:
+    app: gwcloud
+    role: web
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gwcloud
+        role: web
+    spec:
+      containers:
+      - name: gwcloud-web
+        image: dg_webapp:0.1
+        ports:
+        - name: webui
+          containerPort: 8000
+        - name: jobcontroller
+          containerPort: 8001
+        resources: {}
+        tty: true
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "<enter mysql root pass here>"
+        - name: MYSQL_DATABASE
+          value: "<enter mysql db name here>"
+        - name: MYSQL_USER
+          value: "<enter mysql user here>"
+        - name: MYSQL_PASSWORD
+          value: "<enter mysql pass here>"
+        - name: MYSQL_HOST
+          value: "<enter mysql host here>"
+        - name: SITE_URL
+          value: "<enter the site url>"
+        command: ["bash"]
+        args:
+        - -c
+        - "pip install gunicorn && python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn bilbyui.wsgi -b 0.0.0.0:8000"
+        volumeMounts:
+        # name must match the volume name below
+        - name: nfs
+          mountPath: "/usr/share/nginx/html"
+      volumes:
+      - name: nfs
+        persistentVolumeClaim:
+          claimName: nfs
+      restartPolicy: Always
+...

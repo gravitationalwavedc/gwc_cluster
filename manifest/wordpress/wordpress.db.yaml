@@ -1,0 +1,88 @@
+---
+# PersistentVolume - NFS
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gwdc-nfs-pv-db
+  labels:
+    volume: gwdc-nfs-volume-db
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  nfs:
+    server: 172.17.8.104
+    path: "/mnt/sharedfolder/gwdc/db_data"
+---
+# PersistentVolumeClaim - NFS
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: nfs-pvc-db
+  namespace: gwdc
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  selector:
+    matchLabels:
+      volume: gwdc-nfs-volume-db
+---
+# db
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gwdc-db
+  namespace: gwdc
+  labels:
+    app: gwdc
+    role: database
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gwdc
+        role: database
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        ports:
+        - name: port-mysql
+          containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: somewordpress
+        - name: MYSQL_DATABASE
+          value: wordpress
+        - name: MYSQL_USER
+          value: wordpress
+        - name: MYSQL_PASSWORD
+          value: wordpress
+        volumeMounts:
+          - name: nfs-mysql-data
+            mountPath: "/var/lib/mysql"
+      volumes:
+      - name: nfs-mysql-data
+        persistentVolumeClaim:
+          claimName: nfs-pvc-db
+---
+# mysql service
+apiVersion: v1
+kind: Service
+metadata:
+  name: gwdc-db
+  namespace: gwdc
+spec:
+  ports:
+  - name: gwdc-db
+    port: 3306
+    targetPort: 3306
+  selector:
+    app: gwdc
+    role: database
+...
