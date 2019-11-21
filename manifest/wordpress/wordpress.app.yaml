@@ -58,25 +58,13 @@ spec:
         tty: true
         env:
         - name: WORDPRESS_DB_HOST
-          valueFrom:
-            secretKeyRef:
-              name: mysql-pass
-              key: db_host
+          value: gwdc-db
         - name: WORDPRESS_DB_USER
-          valueFrom:
-            secretKeyRef:
-              name: mysql-pass
-              key: db_app_user
+          value: wordpress
         - name: WORDPRESS_DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql-pass
-              key: db_app_pass
+          value: wordpress
         - name: WORDPRESS_DB_NAME
-          valueFrom:
-            secretKeyRef:
-              name: mysql-pass
-              key: db_app_name
+          value: wordpress
         volumeMounts:
           - name: nfs-wordpress-html
             mountPath: "/var/www/html/wp-content"
