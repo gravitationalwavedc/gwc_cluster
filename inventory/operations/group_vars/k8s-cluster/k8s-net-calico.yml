@@ -6,7 +6,7 @@
 # peer_with_router: false
 
 # Enables Internet connectivity from containers
-# nat_outgoing: true
+nat_outgoing: true
 
 # add default ippool name
 # calico_pool_name: "default-pool"
@@ -26,7 +26,7 @@
 # calico_advertise_cluster_ips: true
 
 # Choose data store type for calico: "etcd" or "kdd" (kubernetes datastore)
-# calico_datastore: "etcd"
+calico_datastore: "etcd"
 
 # Use typha (only with kdd)
 # typha_enabled: false
