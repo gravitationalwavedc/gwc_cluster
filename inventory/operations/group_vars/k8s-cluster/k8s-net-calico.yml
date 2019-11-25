@@ -23,10 +23,10 @@
 # calico_mtu: 1500
 
 # Advertise Cluster IPs
-calico_advertise_cluster_ips: true
+# calico_advertise_cluster_ips: true
 
 # Choose data store type for calico: "etcd" or "kdd" (kubernetes datastore)
-calico_datastore: "etcd"
+# calico_datastore: "etcd"
 
 # Use typha (only with kdd)
 # typha_enabled: false
