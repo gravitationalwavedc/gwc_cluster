@@ -24,7 +24,7 @@ _ks_init:
 	@git submodule update --init --recursive
 
 _ks_status:
-	# Confirm Kubespray Release 2.11 commit 86cc703c
+	# Confirm Kubespray Release 2.13 commit 01dbc909
 	@cd $(_DIR_KUBESPRAY) && git branch
 
 _ks_update_vagrantfile:
