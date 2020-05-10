@@ -2,7 +2,7 @@
 	kubespray _ks_init _ks_status _ks_update_vagrantfile
 
 _DIR_KUBESPRAY=./roles/kubespray
-_KUBESPRAY_RELEASE=release-2.11
+_KUBESPRAY_RELEASE=release-2.13
 
 # LOCAL DEPLOYMENT
 build: kubespray
